@@ -23,6 +23,11 @@ app.get('*', (req, res) => {
 });
 
 if (require.main === module) {
+  if (!process.env.JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
+    process.exit(1);
+  }
+
   mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/habit-tracker')
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));

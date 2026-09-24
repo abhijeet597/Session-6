@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-habit-tracker';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function requireAuth(req, res, next) {
   const header = req.headers.authorization;

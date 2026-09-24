@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-habit-tracker';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function signup(req, res) {
   const { email, password } = req.body;
