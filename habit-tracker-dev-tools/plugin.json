@@ -1,0 +1,11 @@
+{
+  "name": "habit-tracker-dev-tools",
+  "version": "1.0.0",
+  "description": "Dev tools for the habit tracker project — includes a restricted test-writer subagent and a weekly report generator skill.",
+  "agents": [
+    "agents/habit-test-writer.md"
+  ],
+  "skills": [
+    "skills/habit-report-generator"
+  ]
+}

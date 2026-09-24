@@ -7,6 +7,7 @@ function todayISO() {
 
 export default function HabitList({ habits, onDelete, onEdit, onCheckIn }) {
   const today = todayISO();
+  const totalCheckIns = habits.reduce((sum, h) => sum + h.completedDates.length, 0);
 
   return (
     <table id="habit-table">

@@ -11,5 +11,19 @@
   "permissions": {
     "allow": ["Bash(npm run test:*)", "Bash(npm run lint:*)"],
     "deny": ["Bash(rm -rf:*)", "Read(./.env)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read(.env)",
+        "hooks": [{ "type": "command", "command": "echo 'Blocked: .env read' >&2; exit 2" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write(*.{js,jsx})",
+        "hooks": [{ "type": "command", "command": "npx prettier --write \"$CLAUDE_TOOL_ARG_path\"" }]
+      }
+    ]
   }
 }
