@@ -1,6 +1,8 @@
 import { useEffect, useReducer, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAuthToken } from '../lib/authApi';
+import NotificationBell from '../components/NotificationBell';
 import {
   getHabits,
   addHabit,
@@ -66,6 +68,7 @@ function reducer(state, action) {
 
 export default function HabitsPage() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const [filterCategory, setFilterCategory] = useState('');
@@ -160,13 +163,21 @@ export default function HabitsPage() {
   const filtered = filterHabits(state.habits, filterCategory, dateFrom, dateTo);
   const displayed = sortHabits(filtered, sort.field, sort.dir);
 
+  const header = (
+    <header className="app-header">
+      <h1>Habit Tracker</h1>
+      <div className="header-actions">
+        <button type="button" className="btn-nav" onClick={() => navigate('/groups')}>Groups</button>
+        <NotificationBell />
+        <button type="button" className="btn-logout" onClick={logout}>Log Out</button>
+      </div>
+    </header>
+  );
+
   if (state.loading) {
     return (
       <div id="app-container">
-        <header className="app-header">
-          <h1>Habit Tracker</h1>
-          <button type="button" className="btn-logout" onClick={logout}>Log Out</button>
-        </header>
+        {header}
         <main className="app-main">
           <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>Loading…</p>
         </main>
@@ -177,10 +188,7 @@ export default function HabitsPage() {
   if (state.error) {
     return (
       <div id="app-container">
-        <header className="app-header">
-          <h1>Habit Tracker</h1>
-          <button type="button" className="btn-logout" onClick={logout}>Log Out</button>
-        </header>
+        {header}
         <main className="app-main">
           <p style={{ color: 'var(--color-danger)', padding: '3rem', textAlign: 'center' }}>{state.error}</p>
         </main>
@@ -190,10 +198,7 @@ export default function HabitsPage() {
 
   return (
     <div id="app-container">
-      <header className="app-header">
-        <h1>Habit Tracker</h1>
-        <button type="button" className="btn-logout" onClick={logout}>Log Out</button>
-      </header>
+      {header}
 
       <main className="app-main">
         {/* Add Habit + Add Category */}

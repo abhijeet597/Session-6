@@ -6,6 +6,8 @@ const habitsRouter = require('./routes/habits');
 const categoriesRouter = require('./routes/categories');
 const authRouter = require('./routes/auth');
 const dashboardRouter = require('./routes/dashboard');
+const groupsRouter = require('./routes/groups');
+const notificationsRouter = require('./routes/notifications');
 const requireAuth = require('./middleware/requireAuth');
 
 const app = express();
@@ -15,6 +17,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/habits', requireAuth, habitsRouter);
 app.use('/api/categories', requireAuth, categoriesRouter);
 app.use('/api/dashboard', requireAuth, dashboardRouter);
+app.use('/api/groups', requireAuth, groupsRouter);
+app.use('/api/notifications', requireAuth, notificationsRouter);
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.get('*', (req, res) => {
