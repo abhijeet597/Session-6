@@ -5,7 +5,7 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export default function HabitList({ habits, onDelete, onEdit, onCheckIn }) {
+export default function HabitList({ habits, onDelete, onEdit, onCheckIn, onPause }) {
   const today = todayISO();
   const totalCheckIns = habits.reduce((sum, h) => sum + h.completedDates.length, 0);
 
@@ -29,8 +29,11 @@ export default function HabitList({ habits, onDelete, onEdit, onCheckIn }) {
           habits.map((habit) => {
             const done = habit.completedDates.includes(today);
             return (
-              <tr key={habit._id}>
-                <td>{habit.name}</td>
+              <tr key={habit._id} className={habit.paused ? 'habit-row--paused' : ''}>
+                <td>
+                  {habit.name}
+                  {habit.paused && <span className="paused-badge">Paused</span>}
+                </td>
                 <td>{habit.category}</td>
                 <td>{habit.frequency}</td>
                 <td>{habit.completedDates.length} check-ins</td>
@@ -39,7 +42,7 @@ export default function HabitList({ habits, onDelete, onEdit, onCheckIn }) {
                     type="button"
                     className="check-in-btn"
                     onClick={() => onCheckIn(habit._id)}
-                    disabled={done}
+                    disabled={done || habit.paused}
                   >
                     {done ? 'Checked in ✓' : 'Check in today'}
                   </button>
@@ -49,6 +52,13 @@ export default function HabitList({ habits, onDelete, onEdit, onCheckIn }) {
                     onClick={() => onEdit(habit._id)}
                   >
                     Edit
+                  </button>
+                  <button
+                    type="button"
+                    className={habit.paused ? 'resume-btn' : 'pause-btn'}
+                    onClick={() => onPause(habit._id)}
+                  >
+                    {habit.paused ? 'Resume' : 'Pause'}
                   </button>
                   <button
                     type="button"

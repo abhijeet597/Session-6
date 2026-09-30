@@ -9,6 +9,7 @@ import {
   deleteHabit,
   updateHabit,
   checkInHabit,
+  pauseHabit,
   getCategories,
   addCategory,
 } from '../lib/habits';
@@ -132,6 +133,11 @@ export default function HabitsPage() {
     await fetchAll();
   }
 
+  async function handlePause(id) {
+    await pauseHabit(id, token);
+    await fetchAll();
+  }
+
   async function handleCheckIn(id) {
     const habit = state.habits.find((h) => h._id === id);
     if (!habit) return;
@@ -242,6 +248,7 @@ export default function HabitsPage() {
             onDelete={handleDelete}
             onEdit={handleEdit}
             onCheckIn={handleCheckIn}
+            onPause={handlePause}
           />
         </div>
       </main>

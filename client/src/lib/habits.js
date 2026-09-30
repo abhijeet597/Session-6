@@ -122,6 +122,26 @@ export async function checkInHabit(id, completedDates, token) {
 }
 
 /**
+ * Toggle the paused state of a habit.
+ * @param {string} id
+ * @param {string} token
+ * @returns {Promise<object>}
+ */
+export async function pauseHabit(id, token) {
+  const res = await fetch(`${API_BASE}/${id}/pause`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Failed to toggle pause');
+  }
+
+  return res.json();
+}
+
+/**
  * Fetch all categories.
  * @param {string} token
  * @returns {Promise<Array>}

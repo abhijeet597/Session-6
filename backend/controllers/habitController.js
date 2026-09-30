@@ -46,4 +46,12 @@ async function deleteHabit(req, res) {
 }
 
 
-module.exports = { getHabits, createHabit, updateHabit, deleteHabit };
+async function togglePauseHabit(req, res) {
+  const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
+  if (!habit) return res.status(404).json({ error: 'Habit not found' });
+  habit.paused = !habit.paused;
+  await habit.save();
+  res.json(habit);
+}
+
+module.exports = { getHabits, createHabit, updateHabit, deleteHabit, togglePauseHabit };

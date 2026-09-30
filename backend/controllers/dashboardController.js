@@ -93,7 +93,7 @@ function completionsByCategory(habits) {
 }
 
 async function getDashboard(req, res) {
-  const habits = await Habit.find({ userId: req.userId });
+  const habits = await Habit.find({ userId: req.userId, paused: { $ne: true } });
   const completedDateSet = allCompletedDates(habits);
 
   res.json({

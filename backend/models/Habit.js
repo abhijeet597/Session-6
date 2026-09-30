@@ -8,6 +8,7 @@ const habitSchema = new mongoose.Schema({
   dayOfMonth: { type: Number, min: 1, max: 31 },
   createdDate: { type: String, required: true },
   completedDates: { type: [String], default: [] },
+  paused: { type: Boolean, default: false },
 });
 
 const Habit = mongoose.model('Habit', habitSchema);

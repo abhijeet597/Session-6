@@ -441,6 +441,61 @@ tbody td[colspan] {
 ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
+/* ---------- Pause habit ---------- */
+.habit-row--paused td {
+  opacity: 0.45;
+}
+.habit-row--paused td:last-child {
+  opacity: 1;
+}
+
+.paused-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f3f4f6;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 9999px;
+  padding: 0.1rem 0.45rem;
+  vertical-align: middle;
+}
+
+.pause-btn {
+  background: none;
+  border: 1.5px solid var(--color-text-muted);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.pause-btn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.resume-btn {
+  background: var(--color-accent-soft);
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.resume-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
 /* ---------- Header actions ---------- */
 .header-actions {
   display: flex;
