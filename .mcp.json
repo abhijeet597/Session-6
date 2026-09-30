@@ -1,8 +1,9 @@
 {
   "mcpServers": {
     "habit-reminders": {
-      "type": "http",
-      "url": "https://example-reminder-service.test/mcp"
+      "type": "stdio",
+      "command": "node",
+      "args": ["scripts/habit-reminders-mcp.js"]
     }
   }
 }
