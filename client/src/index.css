@@ -608,6 +608,29 @@ tbody td[colspan] {
   color: #fff;
 }
 
+/* ---------- Recovery tip button ---------- */
+.recovery-btn {
+  background: #fff7ed;
+  border: 1.5px solid #f97316;
+  color: #ea580c;
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.recovery-btn:hover {
+  background: #f97316;
+  color: #fff;
+}
+.recovery-modal { max-width: 480px; }
+.recovery-tip-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
 /* ---------- Header actions ---------- */
 .header-actions {
   display: flex;
