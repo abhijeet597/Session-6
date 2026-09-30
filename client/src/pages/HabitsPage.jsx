@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAuthToken } from '../lib/authApi';
 import NotificationBell from '../components/NotificationBell';
+import WeeklyReport from '../components/WeeklyReport';
 import {
   getHabits,
   addHabit,
@@ -72,6 +73,7 @@ export default function HabitsPage() {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [showReport, setShowReport] = useState(false);
   const [filterCategory, setFilterCategory] = useState('');
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
@@ -174,6 +176,7 @@ export default function HabitsPage() {
       <h1>Habit Tracker</h1>
       <div className="header-actions">
         <button type="button" className="btn-nav" onClick={() => navigate('/groups')}>Groups</button>
+        <button type="button" className="btn-nav" onClick={() => setShowReport(true)}>Weekly Report</button>
         <NotificationBell />
         <button type="button" className="btn-logout" onClick={logout}>Log Out</button>
       </div>
@@ -205,6 +208,7 @@ export default function HabitsPage() {
   return (
     <div id="app-container">
       {header}
+      {showReport && <WeeklyReport onClose={() => setShowReport(false)} />}
 
       <main className="app-main">
         {/* Add Habit + Add Category */}
