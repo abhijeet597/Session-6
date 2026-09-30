@@ -29,7 +29,12 @@ async function createHabit(req, res) {
 
 async function updateHabit(req, res) {
   const { id } = req.params;
-  const updated = await Habit.findOneAndUpdate({ _id: id, userId: req.userId }, req.body, { new: true, runValidators: true });
+  const { name, category, frequency, dayOfMonth, completedDates, paused } = req.body;
+  const updated = await Habit.findOneAndUpdate(
+    { _id: id, userId: req.userId },
+    { name, category, frequency, dayOfMonth, completedDates, paused },
+    { new: true, runValidators: true }
+  );
   if (!updated) {
     return res.status(404).json({ error: 'Habit not found' });
   }
