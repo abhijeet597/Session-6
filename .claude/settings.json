@@ -12,6 +12,11 @@
     "allow": ["Bash(npm run test:*)", "Bash(npm run lint:*)"],
     "deny": ["Bash(rm -rf:*)", "Read(./.env)"]
   },
+  "sandbox": {
+    "filesystem": { "write": ["./backend", "./client/src"], "read": ["."] },
+    "network": { "allow": ["registry.npmjs.org"] },
+    "failIfUnavailable": true
+  },
   "hooks": {
     "PreToolUse": [
       {
