@@ -1,0 +1,150 @@
+================================================================================
+  HABIT TRACKER — WEEKLY REPORT
+  Week ending: 2026-09-30
+  Generated:   2026-09-30
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+1. SCHEMA OVERVIEW  (backend/models/Habit.js)
+────────────────────────────────────────────────────────────────────────────────
+
+Each Habit document stored in MongoDB has the following fields:
+
+  Field            Type            Notes
+  ─────────────    ─────────────   ─────────────────────────────────────────────
+  _id              ObjectId        MongoDB auto-generated primary key
+  userId           ObjectId        Owner of the habit (required)
+  name             String          Human-readable habit name (required)
+  category         String          Grouping label, e.g. "Fitness", "Learning"
+                                   (required)
+  frequency        String (enum)   One of: Daily | Weekly | Monthly (required)
+  dayOfMonth       Number          1–31; relevant for Monthly habits (optional)
+  createdDate      String          ISO date string of when habit was created
+                                   (required)
+  completedDates   [String]        Array of ISO date strings (YYYY-MM-DD) on
+                                   which a check-in was recorded; default []
+  paused           Boolean         When true the habit is suspended and cannot
+                                   be checked in; default false
+
+Key design decisions noted:
+  • Documents use _id (not id) — the frontend consumes _id directly.
+  • completedDates is the single source of truth for all streak and completion
+    rate calculations.
+  • Paused habits are preserved in the database; they are excluded from active
+    check-in actions but still appear in the UI with a "Paused" badge.
+
+────────────────────────────────────────────────────────────────────────────────
+2. STREAK LOGIC  (client/src/components/HabitList.jsx)
+────────────────────────────────────────────────────────────────────────────────
+
+2a. Current Streak Length  — getLastStreakLength(completedDates)
+  1. Sort all completedDates descending (most-recent first).
+  2. Walk the sorted array; increment a counter while consecutive entries are
+     exactly 1 calendar day apart (diff = 86 400 000 ms / 86 400 000 = 1).
+  3. Stop counting at the first gap > 1 day.
+  4. Returns 0 when completedDates is empty.
+
+2b. Broken-Streak Detection  — isBrokenStreak(habit)
+  A streak is considered broken when ALL of the following are true:
+    • completedDates is non-empty (habit has been started).
+    • Today's ISO date (YYYY-MM-DD) is NOT in completedDates.
+    • Yesterday's ISO date is NOT in completedDates.
+
+  Rationale: a single missed day ends a Daily streak. The check uses local
+  clock time via new Date().toISOString().slice(0,10) and
+  new Date(Date.now() - 86400000).toISOString().slice(0,10).
+
+2c. Streak Display  — formatStreak(count)
+  • count > 0  →  "🔥 <count>d"   (e.g. "🔥 7d")
+  • count = 0  →  "—"
+
+2d. Recovery Tips  — generateRecoveryTip(habit, lastStreak)
+  Triggered when a streak is detected as broken. Category/name keywords are
+  matched to produce a scaled-down re-entry action:
+
+  Category / name keywords          Recovery action offered
+  ───────────────────────────────   ──────────────────────────────────────────
+  exercise, fitness, workout, run,  "Do a 10-minute walk at your normal
+  gym, walk, yoga, sport            <habit> time instead of the full session."
+
+  read, learn, study, book,         "Spend just 5 minutes on <habit> — one
+  course, class                     page or one short video."
+
+  meditat, mindful, journal,        "Write one sentence or take three deep
+  breath, reflect                   breaths at your usual <habit> time."
+
+  eat, diet, nutrit, food,          "Aim for just one compliant meal today
+  water, drink                      instead of full-day compliance."
+
+  (anything else)                   "Do half the normal effort for <habit> —
+                                    same time slot, lower bar."
+
+  The tip also reminds the user of their previous streak length:
+    "Your <N>-day <habit> streak broke — one missed day doesn't erase that
+    progress. <action>. One smaller session is all it takes to re-establish
+    the habit signal before the full routine comes back."
+
+────────────────────────────────────────────────────────────────────────────────
+3. COMPLETION CATEGORIES
+────────────────────────────────────────────────────────────────────────────────
+
+Habits are grouped by the category field (free-text, set by the user).
+Common category buckets observed in the codebase patterns:
+
+  Category Bucket     Typical Habits                 Recovery Strategy
+  ─────────────────   ─────────────────────────────  ──────────────────────────
+  Fitness / Exercise  Running, Gym, Yoga, Walking    10-minute scaled workout
+  Learning / Study    Reading, Courses, Flashcards   5-minute micro-session
+  Mindfulness         Meditation, Journaling,        1-sentence or 3 breaths
+                      Breathing exercises
+  Nutrition / Health  Water intake, Diet tracking,   1 compliant meal
+                      Meal planning
+  Custom / Other      Any habit not matching above   Half-effort, same slot
+
+Frequency breakdown (from schema enum):
+  • Daily   — tracked every calendar day; streak breaks after 1 missed day.
+  • Weekly  — tracked once per week; dayOfMonth is not used.
+  • Monthly — tracked once per month; dayOfMonth (1–31) marks the target day.
+
+────────────────────────────────────────────────────────────────────────────────
+4. WEEKLY SUMMARY METRICS  (reference formulas for live data)
+────────────────────────────────────────────────────────────────────────────────
+
+When connected to a live database the following metrics are computed per user
+over the 7-day window [2026-09-24 → 2026-09-30]:
+
+  Metric                        Formula
+  ──────────────────────────    ────────────────────────────────────────────────
+  Total habits tracked          habits.length
+  Active habits                 habits.filter(h => !h.paused).length
+  Paused habits                 habits.filter(h =>  h.paused).length
+  Total check-ins this week     completedDates entries falling in window
+  Overall completion rate       (check-ins this week) /
+                                (active daily habits × 7 days)  × 100 %
+  Habits with broken streak     habits where isBrokenStreak(h) === true
+  Longest current streak        max(getLastStreakLength(h.completedDates))
+  Habits needing recovery tip   habits where broken && !paused
+
+────────────────────────────────────────────────────────────────────────────────
+5. KNOWN ISSUES AFFECTING REPORT ACCURACY
+────────────────────────────────────────────────────────────────────────────────
+
+The following items (from CLAUDE.md) may skew any live metrics:
+
+  1. updateHabit / deleteHabit stubs — Both controller handlers return
+     501 Not Implemented. Habits cannot yet be deleted or edited via the API,
+     which may inflate the total habit count.
+
+  2. deleteHabit() client-side bug — public/js/habits.js mutates a stale
+     local array instead of calling the DELETE API, so habit counts in older
+     UI views may not reflect the database state.
+
+  3. sortHabits() / checkInHabit() undefined — main.js calls these functions
+     which do not exist, causing ReferenceError at runtime. Check-in counts
+     for some habits may be inaccurate in the vanilla-JS frontend.
+
+────────────────────────────────────────────────────────────────────────────────
+END OF REPORT
+================================================================================
+
+Report saved — would email to the project owner in production.

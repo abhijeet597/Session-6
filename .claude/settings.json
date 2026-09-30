@@ -9,13 +9,13 @@
   },
   "includeCoAuthoredBy": true,
   "permissions": {
-    "allow": ["Bash(npm run test:*)", "Bash(npm run lint:*)"],
+    "allow": ["Bash(npm run test:*)", "Bash(npm run lint:*)", "Bash(node:*)", "Write"],
     "deny": ["Bash(rm -rf:*)", "Read(./.env)"]
   },
   "sandbox": {
-    "filesystem": { "write": ["./backend", "./client/src"], "read": ["."] },
-    "network": { "allow": ["registry.npmjs.org"] },
-    "failIfUnavailable": true
+    "filesystem": { "write": ["./backend", "./client/src", "./reports"], "read": ["."] },
+    "network": { "allow": ["registry.npmjs.org", "api.anthropic.com"] },
+    "failIfUnavailable": false
   },
   "hooks": {
     "PreToolUse": [
