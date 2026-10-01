@@ -187,6 +187,15 @@ body::after {
   border: 1px solid #c7d2fe;
   border-radius: var(--radius-md);
   padding: 0.9rem 1rem;
+  /* 7. Metric card subtle glow pulse */
+  animation: metric-glow 3.5s ease-in-out infinite;
+}
+.dashboard__metric:nth-child(2) { animation-delay: 1.1s; }
+.dashboard__metric:nth-child(3) { animation-delay: 2.2s; }
+
+@keyframes metric-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+  50%       { box-shadow: 0 0 12px 2px rgba(79,70,229,0.12); }
 }
 .dashboard__metric-label {
   font-size: 0.72rem; font-weight: 700;
@@ -279,6 +288,23 @@ body::after {
   color: var(--color-danger); transform: none; box-shadow: none;
 }
 
+/* 6. Focus-visible ring — consistent across all interactive elements */
+:focus-visible {
+  outline: 2.5px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+button:focus-visible {
+  outline: 2.5px solid var(--color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--color-accent-soft);
+}
+input:focus-visible, select:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
 /* ---------- Inputs & selects ---------- */
 input, select {
   font: inherit; font-size: 0.9rem; color: var(--color-text);
@@ -351,7 +377,21 @@ th {
 td { border-bottom: 1px solid var(--color-border); transition: background-color var(--transition-fast); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:nth-of-type(even) td { background-color: #fbfbfe; }
+
+/* 1. Row hover: accent left-border + soft background */
+tbody tr {
+  border-left: 3px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+tbody tr:hover { border-left-color: var(--color-accent); }
 tbody tr:hover td { background-color: var(--color-accent-soft); }
+
+/* 5. Smooth row entry animation */
+@keyframes row-enter {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+tbody tr { animation: row-enter 0.22s ease both; }
 
 /* Empty state */
 tbody td[colspan] {
@@ -359,10 +399,25 @@ tbody td[colspan] {
   color: var(--color-text-muted); font-style: italic; background: var(--color-surface);
 }
 
+/* 4. Skeleton shimmer utility (ready to use on .skeleton elements) */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8f4 50%, #f0f0f0 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+  color: transparent;
+  user-select: none;
+}
+
 /* ---------- Check-in button ---------- */
 .check-in-btn {
   background: var(--color-surface); border: 1px solid var(--color-border-strong);
   color: var(--color-text); font-size: 0.82rem; padding: 0.35rem 0.7rem;
+  min-width: 112px; text-align: center;
 }
 .check-in-btn:hover:not(:disabled) {
   background: var(--color-accent); border-color: var(--color-accent); color: #fff;
@@ -372,27 +427,45 @@ tbody td[colspan] {
 .check-in-btn:disabled {
   cursor: default; opacity: 1;
   background: var(--color-success-soft); border-color: var(--color-success-border);
-  color: var(--color-success); animation: check-in-pop 0.25s ease;
+  color: var(--color-success);
+  /* 3. Enhanced checked-in: pop then gentle pulse */
+  animation: check-in-pop 0.3s ease, checked-pulse 2.4s ease 0.3s infinite;
 }
 
 /* Edit button */
 .edit-btn {
   background: transparent; border-color: transparent;
   color: var(--color-text-muted); font-size: 0.82rem; padding: 0.35rem 0.6rem;
+  /* 2. Micro-animation */
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+              border-color var(--transition-fast), transform var(--transition-fast);
 }
-.edit-btn:hover { background: var(--color-accent-soft); border-color: var(--color-border-strong); color: var(--color-accent); }
+.edit-btn:hover {
+  background: var(--color-accent-soft); border-color: var(--color-border-strong);
+  color: var(--color-accent); transform: scale(1.08);
+}
 
 /* Delete button */
 .delete-btn {
   background: transparent; border-color: transparent;
   color: var(--color-text-muted); font-size: 0.82rem; padding: 0.35rem 0.6rem;
+  /* 2. Micro-animation */
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+              border-color var(--transition-fast), transform var(--transition-fast);
 }
-.delete-btn:hover { background: var(--color-danger-soft); border-color: var(--color-danger); color: var(--color-danger); }
+.delete-btn:hover {
+  background: var(--color-danger-soft); border-color: var(--color-danger);
+  color: var(--color-danger); transform: scale(1.08);
+}
 
 @keyframes check-in-pop {
-  0%   { transform: scale(0.9); }
-  60%  { transform: scale(1.04); }
+  0%   { transform: scale(0.88); }
+  60%  { transform: scale(1.06); }
   100% { transform: scale(1); }
+}
+@keyframes checked-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(5,150,105,0); }
+  50%       { box-shadow: 0 0 0 4px rgba(5,150,105,0.18); }
 }
 
 /* ---------- Auth pages ---------- */
@@ -433,6 +506,28 @@ tbody td[colspan] {
 .error-message {
   font-size: 0.875rem; color: var(--color-danger);
   text-align: center; padding: 0.4rem 0;
+}
+
+/* ---------- Party confetti ---------- */
+.party-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confetti-particle {
+  position: absolute;
+  top: -12px;
+  animation: confetti-fall linear both;
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg) scale(0.8); opacity: 0; }
 }
 
 /* ---------- Scrollbar ---------- */
@@ -585,11 +680,12 @@ tbody td[colspan] {
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 .pause-btn:hover {
   background: var(--color-border);
   color: var(--color-text);
+  transform: scale(1.08);
 }
 
 .resume-btn {

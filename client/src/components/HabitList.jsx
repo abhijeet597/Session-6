@@ -74,6 +74,28 @@ function generateRecoveryTip(habit, lastStreak) {
   return `Your ${streakText} ${name} streak broke — one missed day doesn't erase that progress. ${action.charAt(0).toUpperCase() + action.slice(1)}. One smaller session is all it takes to re-establish the habit signal before the full routine comes back.`;
 }
 
+function triggerParty() {
+  const colors = ['#4f46e5','#818cf8','#059669','#f59e0b','#ec4899','#06b6d4','#f43f5e'];
+  const container = document.createElement('div');
+  container.className = 'party-container';
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-particle';
+    p.style.cssText = `
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.6}s;
+      animation-duration:${1.2+Math.random()*0.8}s;
+      width:${5+Math.random()*7}px;
+      height:${5+Math.random()*7}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    container.appendChild(p);
+  }
+  document.body.appendChild(container);
+  setTimeout(() => container.remove(), 2000);
+}
+
 export default function HabitList({
   habits,
   onDelete,
@@ -134,7 +156,7 @@ export default function HabitList({
                     <button
                       type="button"
                       className="check-in-btn"
-                      onClick={() => onCheckIn(habit._id)}
+                      onClick={() => { if (!done && !habit.paused) triggerParty(); onCheckIn(habit._id); }}
                       disabled={done || habit.paused}
                     >
                       {done ? "Checked in ✓" : "Check in today"}
